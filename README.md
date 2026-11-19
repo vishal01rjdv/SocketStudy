@@ -61,62 +61,64 @@ client
 ```
 import socket
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket()
+s.connect(('localhost', 8000))
 
-client.connect(('127.0.0.1', 12345))
+print("Connected to server")
 
 while True:
-    data = client.recv(1024).decode()
+    msg = s.recv(1024).decode()
 
-    if data.lower() == "exit":
+    if not msg:
         break
 
-    print("Server:", data)
+    print("Message from server:", msg)
 
-    client.send("Acknowledgement Received".encode())
+    s.send("ACK: Message received".encode())
 
-client.close()
+s.close()
 ```
 
 server
 ```
 import socket
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket()
+s.bind(('localhost', 8000))
+s.listen(5)
 
-server.bind(('127.0.0.1', 12345))
-server.listen(1)
+print("Server waiting for client...")
 
-print("Server is waiting for client...")
-conn, addr = server.accept()
-
-print("Client connected")
+c, addr = s.accept()
+print("Client connected:", addr)
 
 while True:
-    data = input("Enter a data: ")
+    msg = input("Enter a message: ")
 
-    if data.lower() == "exit":
-        conn.send(data.encode())
+    if msg.lower() == "exit":
         break
 
-    conn.send(data.encode())
+    c.send(msg.encode())
 
-    acknowledgement = conn.recv(1024).decode()
-    print(acknowledgement)
+    ack = c.recv(1024).decode()
+    print("Client ACK:", ack)
 
-conn.close()
-server.close()
+c.close()
+s.close()
+
 ```
 ## Output
 client
 
-<img width="1917" height="1018" alt="Screenshot 2026-11-17 205435" src="https://github.com/user-attachments/assets/c95210b0-6675-4810-afc4-bd7220e5b2fb" />
+<img width="1917" height="1015" alt="Screenshot 2026-11-19 140612" src="https://github.com/user-attachments/assets/cded1de5-90c4-4094-b05b-514a77b37d87" />
+
 
 
 
 server
 
-<img width="1917" height="1022" alt="Screenshot 2026-11-17 205411" src="https://github.com/user-attachments/assets/c168ab39-e061-4c32-8e3e-4f300bec0c50" />
+<img width="1917" height="1020" alt="Screenshot 2026-11-19 140557" src="https://github.com/user-attachments/assets/bba44ebc-667c-4a69-8856-9b7d8e1ab140" />
+
 
 
 
